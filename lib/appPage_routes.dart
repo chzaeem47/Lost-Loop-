@@ -8,6 +8,6 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> routesData = {
     SplashPageRoute: (context) => SplashScreen(),
-    HomePageRoute: (context) => HomepageScreen(),
+    HomePageRoute: (context) => Homepage(),
   };
 }
