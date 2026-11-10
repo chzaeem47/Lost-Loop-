@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../report/report_lost_screen.dart';
 
 class ActionCardsSection extends StatelessWidget {
   final VoidCallback? onLostTap;
@@ -25,7 +26,15 @@ class ActionCardsSection extends StatelessWidget {
             icon: Icons.saved_search_rounded,
             badgeText: "LOST",
             isPrimary: true,
-            onTap: onLostTap ?? () {},
+            onTap: onLostTap ??
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReportLostScreen(),
+                    ),
+                  );
+                },
           ),
         ),
 
