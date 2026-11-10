@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:semes_project/appPage_routes.dart';
+import 'package:semes_project/core/routes/app_routes.dart';
+import 'package:semes_project/core/theme/app_theme.dart';
 
 void main() {
-  runApp(LostLoop());
+  runApp(const LostLoopApp());
 }
 
-class LostLoop extends StatelessWidget {
+class LostLoopApp extends StatelessWidget {
+  const LostLoopApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Lost Loop',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.HomePageRoute,
+      theme: AppTheme.lightTheme,
+      initialRoute: AppRoutes.splash,
       routes: AppRoutes.routesData,
     );
   }
