@@ -48,7 +48,7 @@ class SearchBarWidget extends StatelessWidget {
                   Icon(
                     Icons.search_rounded,
                     color: Colors.white,
-                    size: 22,
+                    size: 25,
                   ),
                   Positioned(
                     top: 8,
@@ -76,7 +76,6 @@ class SearchBarWidget extends StatelessWidget {
                   color: Colors.grey.shade500,
                   fontSize: 15,
                   fontStyle: FontStyle.italic,
-                  decoration: TextDecoration.underline,
                   decorationColor: AppColors.primaryBlue,
                   decorationThickness: 1.5,
                 ),

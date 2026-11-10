@@ -33,11 +33,15 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Text(
                         "Hi Zaeem",
-                        style: AppTextStyles.greetingTitle,
+                        style: AppTextStyles.greetingTitle.copyWith(
+                          letterSpacing: 2,
+                        ),
                       ),
                       Text(
                         "lets find what are you looking for",
-                        style: AppTextStyles.greetingSubtitle,
+                        style: AppTextStyles.greetingSubtitle.copyWith(
+                          letterSpacing: 1,
+                        ),
                       ),
                     ],
                   ),
@@ -117,7 +121,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisCount: 3,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.65,
+                childAspectRatio: 0.55,
               ),
               itemBuilder: (context, index) {
                 return ItemCard(item: items[index]);

@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
           AnimatedPositioned(
             duration: const Duration(milliseconds: 600),
             curve: Curves.easeInOut,
-            top: showSignup ? topPadding + 10 : size.height * 0.3,
+            top: showSignup ? topPadding + 23 : size.height * 0.14,
             left: 0,
             right: 0,
             height: showSignup ? size.height * 0.22 : 220,
