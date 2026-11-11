@@ -14,8 +14,6 @@ class CustomBottomNav extends StatelessWidget {
   static const List<IconData> icons = [
     Icons.home_rounded,
     Icons.search_rounded,
-    Icons.link_rounded,
-    Icons.description_outlined,
     Icons.person_outline_rounded,
   ];
 

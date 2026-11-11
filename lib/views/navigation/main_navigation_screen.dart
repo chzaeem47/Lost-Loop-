@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
+import '../items/lost_items_screen.dart';
+import '../profile/profile_screen.dart';
 import 'widgets/custom_bottom_nav.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -14,10 +16,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const _PlaceholderScreen(title: "Search Screen"),
-    const _PlaceholderScreen(title: "Matches / Links Screen"),
-    const _PlaceholderScreen(title: "Reports Screen"),
-    const _PlaceholderScreen(title: "Profile Screen"),
+    const LostItemsScreen(),
+    const ProfileScreen(),
   ];
 
   @override
@@ -34,21 +34,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _currentIndex = index;
           });
         },
-      ),
-    );
-  }
-}
-
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _PlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
