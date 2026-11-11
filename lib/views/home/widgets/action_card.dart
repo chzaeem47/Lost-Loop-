@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../report/report_found_screen.dart';
 import '../../report/report_lost_screen.dart';
 
 class ActionCardsSection extends StatelessWidget {
@@ -49,7 +50,15 @@ class ActionCardsSection extends StatelessWidget {
             icon: Icons.handshake_rounded,
             badgeText: "FOUND",
             isPrimary: false,
-            onTap: onFoundTap ?? () {},
+            onTap: onFoundTap ??
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ReportFoundScreen(),
+                    ),
+                  );
+                },
           ),
         ),
       ],
