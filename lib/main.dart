@@ -15,7 +15,7 @@ class LostLoopApp extends StatelessWidget {
       title: 'Lost Loop',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.splash,
       routes: AppRoutes.routesData,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_text_styles.dart';
+import '../../core/services/auth_service.dart';
 import '../../models/item_model.dart';
 import 'widgets/action_card.dart';
 import 'widgets/home_header.dart';
@@ -31,11 +32,19 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Hi Zaeem",
-                        style: AppTextStyles.greetingTitle.copyWith(
-                          letterSpacing: 2,
-                        ),
+                      ValueListenableBuilder<UserModel?>(
+                        valueListenable: AuthService.instance,
+                        builder: (context, user, child) {
+                          final displayName = (user != null && user.name.isNotEmpty)
+                              ? user.name
+                              : "Zaeem";
+                          return Text(
+                            "Hi, $displayName",
+                            style: AppTextStyles.greetingTitle.copyWith(
+                              letterSpacing: 1.5,
+                            ),
+                          );
+                        },
                       ),
                       Text(
                         "lets find what are you looking for",
