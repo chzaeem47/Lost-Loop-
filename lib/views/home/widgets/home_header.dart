@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../core/constants/app_assets.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/auth_service.dart';
 
 class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
   const HomeHeader({super.key});
@@ -45,7 +45,7 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
 
-              // Actions: Notification Bell + Avatar
+              // Actions: Notification Bell + Dynamic Avatar / Person Icon
               Row(
                 children: [
                   Stack(
@@ -73,20 +73,57 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
                     ],
                   ),
                   const SizedBox(width: 4),
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 1.5,
-                      ),
-                      image: const DecorationImage(
-                        image: AssetImage(AppAssets.userAvatar),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+
+                  ValueListenableBuilder<UserModel?>(
+                    valueListenable: AuthService.instance,
+                    builder: (context, user, child) {
+                      final photoUrl = user?.photoUrl;
+                      Widget avatarContent;
+
+                      if (photoUrl != null && photoUrl.isNotEmpty) {
+                        if (photoUrl.startsWith('http')) {
+                          avatarContent = Image.network(
+                            photoUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => const Icon(
+                              Icons.person_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          );
+                        } else {
+                          avatarContent = Image.asset(
+                            photoUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => const Icon(
+                              Icons.person_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          );
+                        }
+                      } else {
+                        avatarContent = const Icon(
+                          Icons.person_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        );
+                      }
+
+                      return Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.darkNavy.withOpacity(0.4),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: ClipOval(child: avatarContent),
+                      );
+                    },
                   ),
                 ],
               ),
