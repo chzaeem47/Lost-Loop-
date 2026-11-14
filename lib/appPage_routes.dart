@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'views/auth/splash_screen.dart';
-import 'views/navigation/main_navigation_screen.dart';
+import 'package:semes_project/Signin.dart';
+import 'package:semes_project/Signup.dart';
+import 'package:semes_project/Splash.dart';
 
-class AppRoutes {
-  static const String splash = "/";
-  static const String home = "/home";
+class ApppageRoutes {
+  static const String SplashRoute = '/';
+  static const String SigninRoute = '/signin';
+  static const String SignupRoute = '/signup';
 
-  static const String SplashPageRoute = splash;
-  static const String HomePageRoute = home;
-
-  static Map<String, WidgetBuilder> get routesData => {
-    splash: (context) => const SplashScreen(),
-    home: (context) => const MainNavigationScreen(),
+  static final Map<String, WidgetBuilder> routesData = {
+    SplashRoute: (context) => Splash(),
+    SigninRoute: (context) => Signin(),
+    SignupRoute: (context) => Signup(),
   };
 }

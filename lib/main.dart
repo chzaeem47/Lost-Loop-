@@ -1,22 +1,26 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:semes_project/core/routes/app_routes.dart';
-import 'package:semes_project/core/theme/app_theme.dart';
+import 'package:semes_project/appPage_routes.dart';
 
-void main() {
-  runApp(const LostLoopApp());
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(LostLoop());
 }
 
-class LostLoopApp extends StatelessWidget {
-  const LostLoopApp({super.key});
-
+class LostLoop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Lost Loop',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.splash,
-      routes: AppRoutes.routesData,
+      initialRoute: ApppageRoutes.SplashRoute,
+      routes: ApppageRoutes.routesData,
     );
   }
 }
