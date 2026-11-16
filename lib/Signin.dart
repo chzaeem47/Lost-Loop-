@@ -1,4 +1,5 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:semes_project/appPage_routes.dart';
@@ -11,6 +12,61 @@ class Signin extends StatefulWidget {
 }
 
 class _SigninState extends State<Signin> {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+
+  Future<void> signinUser() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+
+      if (!mounted) return;
+
+      emailController.clear();
+      passwordController.clear();
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        ApppageRoutes.SplashRoute,
+            (route) => false,
+      );
+
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'Login failed!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Something went wrong!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,6 +188,7 @@ class _SigninState extends State<Signin> {
                             child: SignupTextField(
                               hintText: "Enter your Email",
                               prefixIcon: Icons.email_outlined,
+                              controller: emailController,
                             ),
                           ),
 
@@ -146,6 +203,7 @@ class _SigninState extends State<Signin> {
                               prefixIcon: Icons.lock_rounded,
                               postfixIcon: Icons.remove_red_eye,
                               obscureText: true,
+                              controller: passwordController,
                             ),
                           ),
 
@@ -192,7 +250,7 @@ class _SigninState extends State<Signin> {
                                 ],
                               ),
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: isLoading ? null : signinUser,
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   shape: RoundedRectangleBorder(
@@ -200,7 +258,16 @@ class _SigninState extends State<Signin> {
                                     BorderRadius.circular(40),
                                   ),
                                 ),
-                                child: Text(
+                                child: isLoading
+                                    ? SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                    : Text(
                                   "Sign In",
                                   style: GoogleFonts.ibmPlexSans(
                                     fontSize: 24,
@@ -282,5 +349,11 @@ class _SigninState extends State<Signin> {
         ],
       ),
     );
+  }
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }
