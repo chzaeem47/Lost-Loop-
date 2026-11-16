@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:semes_project/appPage_routes.dart';
@@ -10,6 +11,68 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool isLoading = false;
+
+  Future<void> signupUser() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+
+      await userCredential.user!.updateDisplayName(
+        nameController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      nameController.clear();
+      emailController.clear();
+      passwordController.clear();
+
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        ApppageRoutes.SplashRoute,
+            (route) => false,
+      );
+
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'Registration failed!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Something went wrong!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,10 +80,7 @@ class _SignupState extends State<Signup> {
         fit: StackFit.expand,
         children: [
           // Background Image
-          Image.asset(
-            'assets/images/signup-bg.png',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/images/signup-bg.png', fit: BoxFit.cover),
 
           SafeArea(
             child: LayoutBuilder(
@@ -40,9 +100,7 @@ class _SignupState extends State<Signup> {
                           Positioned(
                             left: 22,
                             top: 164,
-                            child: Text(
-                              'Sign Up',
-                              style: GoogleFonts.ibmPlexSerif(
+                            child: Text('Sign Up', style: GoogleFonts.ibmPlexSerif(
                                 fontSize: 45,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
@@ -56,9 +114,7 @@ class _SignupState extends State<Signup> {
                             top: 225,
                             child: SizedBox(
                               width: 200,
-                              child: Text(
-                                'Create your account to\ncontinue',
-                                style: GoogleFonts.roboto(
+                              child: Text('Create your account to\ncontinue', style: GoogleFonts.roboto(
                                   fontSize: 12,
                                   color: Colors.white,
                                 ),
@@ -70,9 +126,7 @@ class _SignupState extends State<Signup> {
                           Positioned(
                             left: 22,
                             top: 268,
-                            child: Text(
-                              'Already have an\naccount?',
-                              style: GoogleFonts.ibmPlexSans(
+                            child: Text('Already have an\naccount?', style: GoogleFonts.ibmPlexSans(
                                 fontSize: 14,
                                 fontStyle: FontStyle.italic,
                                 color: Colors.white,
@@ -98,9 +152,7 @@ class _SignupState extends State<Signup> {
                                   ),
                                   padding: EdgeInsets.zero,
                                 ),
-                                child: Text(
-                                  'Sign In',
-                                  style: GoogleFonts.ibmPlexSerif(
+                                child: Text('Sign In', style: GoogleFonts.ibmPlexSerif(
                                     fontSize: 20,
                                     color: Colors.white,
                                   ),
@@ -119,6 +171,7 @@ class _SignupState extends State<Signup> {
                               child: SignupTextField(
                                 hintText: 'Full Name',
                                 prefixIcon: Icons.person_outline,
+                                controller: nameController,
                               ),
                             ),
                           ),
@@ -133,6 +186,7 @@ class _SignupState extends State<Signup> {
                               child: SignupTextField(
                                 hintText: 'Email Address',
                                 prefixIcon: Icons.email_outlined,
+                                controller: emailController,
                               ),
                             ),
                           ),
@@ -149,6 +203,7 @@ class _SignupState extends State<Signup> {
                                 prefixIcon: Icons.lock_rounded,
                                 postfixIcon: Icons.remove_red_eye,
                                 obscureText: true,
+                                controller: passwordController,
                               ),
                             ),
                           ),
@@ -172,9 +227,7 @@ class _SignupState extends State<Signup> {
                                 ],
                               ),
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // Create account
-                                },
+                                onPressed: isLoading ? null : signupUser,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
@@ -182,7 +235,16 @@ class _SignupState extends State<Signup> {
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                 ),
-                                child: Text(
+                                child: isLoading
+                                    ? SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                    : Text(
                                   'Sign Up',
                                   style: GoogleFonts.ibmPlexSerif(
                                     fontSize: 24,
@@ -256,5 +318,14 @@ class _SignupState extends State<Signup> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+
+    super.dispose();
   }
 }

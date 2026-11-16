@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:semes_project/AuthWrapper.dart';
 import 'package:semes_project/Signin.dart';
 import 'package:semes_project/Signup.dart';
 import 'package:semes_project/Splash.dart';
@@ -9,7 +10,7 @@ class ApppageRoutes {
   static const String SignupRoute = '/signup';
 
   static final Map<String, WidgetBuilder> routesData = {
-    SplashRoute: (context) => Splash(),
+    SplashRoute: (context) => AuthWrapper(),
     SigninRoute: (context) => Signin(),
     SignupRoute: (context) => Signup(),
   };

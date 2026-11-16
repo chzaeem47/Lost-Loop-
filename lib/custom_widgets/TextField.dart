@@ -6,6 +6,7 @@ class SignupTextField extends StatelessWidget {
   final IconData prefixIcon;
   final IconData? postfixIcon;
   final bool obscureText;
+  final TextEditingController? controller;
 
   const SignupTextField({
     super.key,
@@ -13,6 +14,7 @@ class SignupTextField extends StatelessWidget {
     required this.prefixIcon,
     this.postfixIcon,
     this.obscureText = false,
+    this.controller,
   });
 
   @override
@@ -20,6 +22,7 @@ class SignupTextField extends StatelessWidget {
     return SizedBox(
       width: 380,
       child: TextField(
+        controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
