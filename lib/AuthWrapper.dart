@@ -24,7 +24,7 @@ class AuthWrapper extends StatelessWidget {
 
         // If user is logged in
         if (snapshot.hasData) {
-          return Home();
+          return HomeScreen();
         }
 
         // If user is not logged in
