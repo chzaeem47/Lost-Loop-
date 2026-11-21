@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:semes_project/appPage_routes.dart';
 import 'package:semes_project/custom_widgets/TextField.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,9 +16,13 @@ class _SigninState extends State<Signin> {
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  bool isLoading = false;
 
+  bool isLoading = false;
+  bool isGoogleLoading = false;
+
+  // EMAIL AND PASSWORD SIGN IN
   Future<void> signinUser() async {
+
     setState(() {
       isLoading = true;
     });
@@ -40,6 +45,7 @@ class _SigninState extends State<Signin> {
       );
 
     } on FirebaseAuthException catch (e) {
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -50,6 +56,7 @@ class _SigninState extends State<Signin> {
       );
 
     } catch (e) {
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,6 +67,7 @@ class _SigninState extends State<Signin> {
       );
 
     } finally {
+
       if (mounted) {
         setState(() {
           isLoading = false;
@@ -67,8 +75,109 @@ class _SigninState extends State<Signin> {
       }
     }
   }
+
+  // GOOGLE SIGN IN
+  Future<void> signInWithGoogle() async {
+
+    // Start loading
+    setState(() {
+      isGoogleLoading = true;
+    });
+
+    try {
+
+      // 1. Select Google account
+      final GoogleSignInAccount googleUser =
+      await GoogleSignIn.instance.authenticate();
+
+      // 2. Get Google authentication information
+      final GoogleSignInAuthentication googleAuth =
+          googleUser.authentication;
+
+      // 3. Get ID token
+      final String? idToken = googleAuth.idToken;
+
+      if (idToken == null) {
+        throw Exception('Google ID token is missing!');
+      }
+
+      // 4. Create Firebase credential
+      final OAuthCredential credential =
+      GoogleAuthProvider.credential(
+        idToken: idToken,
+      );
+
+      // 5. Sign in to Firebase
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (!mounted) return;
+
+      emailController.clear();
+      passwordController.clear();
+
+      // Navigate to AuthWrapper
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        ApppageRoutes.SplashRoute,
+            (route) => false,
+      );
+
+    } on GoogleSignInException catch (e) {
+
+      if (!mounted) return;
+
+      // Ignore cancellation
+      if (e.code != GoogleSignInExceptionCode.canceled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.description ?? 'Google Sign In failed!',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+
+    } on FirebaseAuthException catch (e) {
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message ?? 'Firebase authentication failed!',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } catch (e) {
+
+      if (!mounted) return;
+
+      debugPrint('Google Sign In Error: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Something went wrong!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } finally {
+
+      // Stop loading
+      if (mounted) {
+        setState(() {
+          isGoogleLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -84,6 +193,7 @@ class _SigninState extends State<Signin> {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
+
                 return SizedBox(
                   width: constraints.maxWidth,
                   height: constraints.maxHeight,
@@ -153,7 +263,10 @@ class _SigninState extends State<Signin> {
                             height: 38,
                             child: TextButton(
                               onPressed: () {
-                                Navigator.pushNamed(context,ApppageRoutes.SignupRoute);
+                                Navigator.pushNamed(
+                                  context,
+                                  ApppageRoutes.SignupRoute,
+                                );
                               },
                               style: TextButton.styleFrom(
                                 backgroundColor: Color(0xff07076C),
@@ -212,7 +325,12 @@ class _SigninState extends State<Signin> {
                             right: 25,
                             top: 558,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  ApppageRoutes.ForgotRoute,
+                                );
+                              },
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,
@@ -249,8 +367,13 @@ class _SigninState extends State<Signin> {
                                   ),
                                 ],
                               ),
+
                               child: TextButton(
-                                onPressed: isLoading ? null : signinUser,
+                                onPressed:
+                                (isLoading || isGoogleLoading)
+                                    ? null
+                                    : signinUser,
+
                                 style: TextButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   shape: RoundedRectangleBorder(
@@ -258,6 +381,7 @@ class _SigninState extends State<Signin> {
                                     BorderRadius.circular(40),
                                   ),
                                 ),
+
                                 child: isLoading
                                     ? SizedBox(
                                   width: 24,
@@ -293,44 +417,79 @@ class _SigninState extends State<Signin> {
                                 borderRadius:
                                 BorderRadius.circular(199),
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    "assets/images/devicon_google.svg",
-                                    width: 23,
-                                    height: 23,
+
+                              child: TextButton(
+                                onPressed:
+                                (isGoogleLoading || isLoading)
+                                    ? null
+                                    : signInWithGoogle,
+
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(199),
                                   ),
+                                ),
 
-                                  SizedBox(width: 5),
+                                child: isGoogleLoading
+                                    ? SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFF143DF4),
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                    : Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  children: [
 
-                                  Text(
-                                    "Continue with Google",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.ibmPlexSans(
-                                      fontSize: 19,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.black,
+                                    SvgPicture.asset(
+                                      "assets/images/devicon_google.svg",
+                                      width: 23,
+                                      height: 23,
                                     ),
-                                  ),
-                                ],
+
+                                    SizedBox(width: 12),
+
+                                    Text(
+                                      "Continue with Google",
+                                      textAlign: TextAlign.center,
+                                      style:
+                                      GoogleFonts.ibmPlexSans(
+                                        fontSize: 19,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
 
+                          // Footer
                           Positioned(
                             top: 758,
                             left: 0,
                             right: 0,
                             child: Column(
                               children: [
-                                Text("© 2026 all rights reserved", style: TextStyle(
+                                Text(
+                                  "© 2026 all rights reserved",
+                                  style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                   ),
                                 ),
-                                Text("Made with ♡ by ZS Developer's", style: TextStyle(
+
+                                Text(
+                                  "Made with ♡ by ZS Developer's",
+                                  style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                   ),
@@ -350,6 +509,7 @@ class _SigninState extends State<Signin> {
       ),
     );
   }
+
   @override
   void dispose() {
     emailController.dispose();
