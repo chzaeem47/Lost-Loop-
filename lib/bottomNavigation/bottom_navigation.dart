@@ -45,7 +45,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Container(
-      height: 64 + bottomPadding,
+      height: 60 + bottomPadding,
       padding: EdgeInsets.only(bottom: bottomPadding),
       decoration: const BoxDecoration(
         color: Color(0xFF143DF4), // Vibrant Primary Blue
@@ -59,13 +59,6 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             width: 1.8,
           ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -77,7 +70,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             child: const Icon(
               Icons.home_outlined,
               color: Colors.white,
-              size: 26,
+              size: 30,
             ),
           ),
 
@@ -90,7 +83,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
                 Icon(
                   Icons.search_rounded,
                   color: Colors.white,
-                  size: 26,
+                  size: 30,
                 ),
                 Positioned(
                   top: -2,
@@ -98,7 +91,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
                   child: Icon(
                     Icons.auto_awesome,
                     color: Color(0xFFFFE600), // Vibrant Yellow Sparkle
-                    size: 12,
+                    size: 15,
                   ),
                 ),
               ],
@@ -111,7 +104,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             child: const Icon(
               Icons.link_rounded,
               color: Colors.white,
-              size: 26,
+              size: 30,
             ),
           ),
 
@@ -121,7 +114,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             child: const Icon(
               Icons.description_outlined,
               color: Colors.white,
-              size: 25,
+              size: 30,
             ),
           ),
 
@@ -131,7 +124,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             child: const Icon(
               Icons.account_circle_outlined,
               color: Colors.white,
-              size: 26,
+              size: 30,
             ),
           ),
         ],
@@ -150,8 +143,8 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       child: Container(
-        width: 54,
-        height: 58,
+        width: 50,
+        height: 50,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF080D70) : Colors.transparent, // Navy Dome
