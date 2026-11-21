@@ -29,7 +29,7 @@
       // Opening animation
       _introController = AnimationController(
         vsync: this,
-        duration: Duration(seconds: 4),
+        duration: Duration(seconds: 3),
       );
 
       _scaleAnimation = CurvedAnimation(
@@ -45,7 +45,7 @@
       // Exit animation
       _exitController = AnimationController(
         vsync: this,
-        duration: Duration(milliseconds: 5000),
+        duration: Duration(milliseconds: 3000),
       );
 
       _slideAnimation = Tween<Offset>(
@@ -62,7 +62,7 @@
       _introController.forward();
 
       // Wait for intro, pause, and then slide upwards
-      Future.delayed(Duration(seconds: 5), () async {
+      Future.delayed(Duration(seconds: 3), () async {
 
         if (!mounted) return;
 

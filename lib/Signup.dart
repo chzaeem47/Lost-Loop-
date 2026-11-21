@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:semes_project/appPage_routes.dart';
 import 'package:semes_project/custom_widgets/TextField.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,6 +17,7 @@ class _SignupState extends State<Signup> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isLoading = false;
+  bool isGoogleLoading = false;
 
   Future<void> signupUser() async {
     setState(() {
@@ -73,6 +75,108 @@ class _SignupState extends State<Signup> {
       }
     }
   }
+
+
+  Future<void> signUpWithGoogle() async {
+
+    // Start loading
+    setState(() {
+      isGoogleLoading = true;
+    });
+
+    try {
+
+      // 1. Select Google account
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+      // 2. Get Google authentication information
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      // 3. Get ID token
+      final String? idToken = googleAuth.idToken;
+      if (idToken == null) {
+        throw Exception('Google ID token is missing!');
+      }
+      // 4. Create Firebase credential
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        idToken: idToken,
+      );
+
+      // 5. Create account or sign in with Firebase
+      final UserCredential userCredential =
+      await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      if (!mounted) return;
+
+      // Check Firebase user
+      final user = userCredential.user;
+
+      debugPrint('Google User Created/Authenticated');
+      debugPrint('Name: ${user?.displayName}');
+      debugPrint('Email: ${user?.email}');
+      debugPrint('UID: ${user?.uid}');
+      debugPrint('Photo: ${user?.photoURL}');
+
+      // 6. Navigate to AuthWrapper
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        ApppageRoutes.SplashRoute,
+            (route) => false,
+      );
+
+    } on GoogleSignInException catch (e) {
+
+      if (!mounted) return;
+
+      // Ignore user cancellation
+      if (e.code != GoogleSignInExceptionCode.canceled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.description ?? 'Google Sign Up failed!',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+
+    } on FirebaseAuthException catch (e) {
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message ?? 'Firebase registration failed!',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } catch (e) {
+
+      if (!mounted) return;
+
+      debugPrint('Google Sign Up Error: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Something went wrong!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+
+    } finally {
+
+      // Stop loading
+      if (mounted) {
+        setState(() {
+          isGoogleLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -268,23 +372,50 @@ class _SignupState extends State<Signup> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/images/devicon_google.svg',
-                                    width: 23,
-                                    height: 23,
+
+                              child: TextButton(
+                                onPressed: (isGoogleLoading || isLoading)
+                                    ? null
+                                    : signUpWithGoogle,
+
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: Colors.black,
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    'Continue with Google',
-                                    style: GoogleFonts.ibmPlexSerif(
-                                      fontSize: 19,
-                                      color: Colors.black,
+                                ),
+
+                                child: isGoogleLoading
+                                    ? SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFF143DF4),
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                    : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/images/devicon_google.svg',
+                                      width: 23,
+                                      height: 23,
                                     ),
-                                  ),
-                                ],
+
+                                    SizedBox(width: 12),
+
+                                    Text(
+                                      'Continue with Google',
+                                      style: GoogleFonts.ibmPlexSerif(
+                                        fontSize: 19,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
